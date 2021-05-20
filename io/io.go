@@ -29,32 +29,32 @@ type Arg struct {
 	Value  interface{}
 }
 
-func ParseFlag(args []Arg) {
-	data := map[string]interface{}{}
-
+func ParseFlag(args []*Arg) error{
 	for _, arg := range args {
-		setVar(arg, data)
+		err := setVar(arg)
+		if err != nil {
+			return err
+		}
 	}
 
 	flag.Parse()
 
-	for key, val := range data {
-		switch val.(type) {
+	for _, arg := range args {
+		switch arg.Value.(type) {
 		case *string:
-			data[key] = *(val.(*string))
+			arg.Value = *(arg.Value.(*string))
 		case *int:
-			data[key] = *(val.(*int))
+			arg.Value = *(arg.Value.(*int))
 		case *bool:
-			data[key] = *(val.(*bool))
+			arg.Value = *(arg.Value.(*bool))
 		}
 	}
 
-	fmt.Println(data)
+	return nil
 }
 
 // setVar 将选项和值绑定到map中
-func setVar(arg Arg, data map[string]interface{}) error {
-
+func setVar(arg *Arg) error {
 	option := arg.Option
 	remark := arg.Remark
 
@@ -62,18 +62,17 @@ func setVar(arg Arg, data map[string]interface{}) error {
 	case string:
 		tmp := ""
 		flag.StringVar(&tmp, option, arg.Default.(string), remark)
-		data[option] = &tmp
-		return nil
+		arg.Value = &tmp
 	case int:
 		tmp := 0
 		flag.IntVar(&tmp, option, arg.Default.(int), remark)
-		data[option]  = &tmp
+		arg.Value = &tmp
 	case bool:
 		tmp := false
 		flag.BoolVar(&tmp, option, arg.Default.(bool), remark)
-		data[option] = &tmp
+		arg.Value = &tmp
 	default:
-		return fmt.Errorf("no match case")
+		return  fmt.Errorf("no match anything")
 	}
 	return nil
 }
