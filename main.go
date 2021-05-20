@@ -4,18 +4,20 @@ import "Glib/io"
 
 func main() {
 
-	/*var name string
-	var age  int
-	var status bool*/
 
-	flagArgs := [][]interface{}{
+
+	/*flagArgs := [][]interface{}{
 		{"name", "tcl", "姓名"},
 		{"age", 18, "年龄"},
 		{"married", false, "婚否"},
+	}*/
+
+	flagArgs := []io.Arg{
+		{Option: "name", Default: "tcl", Remark: "姓名"},
+		{Option: "age", Default:  18, Remark: "年龄"},
+		{Option: "married", Default: false, Remark: "婚否"},
 	}
 
-	//io.ParseFlag(name, age, status)
 	io.ParseFlag(flagArgs)
 
-	//io.Test()
 }

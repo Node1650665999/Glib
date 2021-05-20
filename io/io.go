@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"time"
 )
 
 // ParseOsArgs 解析 os.Args
@@ -23,11 +22,18 @@ func ParseOsArgs(filename *string, args *[]string) bool {
 	return false
 }
 
-func ParseFlag(args [][]interface{}) {
+type Arg struct {
+	Option string
+	Default interface{}
+	Remark  string
+	Value  interface{}
+}
+
+func ParseFlag(args []Arg) {
 	data := map[string]interface{}{}
 
 	for _, arg := range args {
-		parseVar(arg, data)
+		setVar(arg, data)
 	}
 
 	flag.Parse()
@@ -46,21 +52,26 @@ func ParseFlag(args [][]interface{}) {
 	fmt.Println(data)
 }
 
-func parseVar(arg []interface{}, data map[string]interface{}) error {
-	switch arg[1].(type) {
+// setVar 将选项和值绑定到map中
+func setVar(arg Arg, data map[string]interface{}) error {
+
+	option := arg.Option
+	remark := arg.Remark
+
+	switch arg.Default.(type) {
 	case string:
 		tmp := ""
-		flag.StringVar(&tmp, arg[0].(string), arg[1].(string), arg[2].(string))
-		data["name"] = &tmp
+		flag.StringVar(&tmp, option, arg.Default.(string), remark)
+		data[option] = &tmp
 		return nil
 	case int:
 		tmp := 0
-		flag.IntVar(&tmp, arg[0].(string), arg[1].(int), arg[2].(string))
-		data["age"] = &tmp
+		flag.IntVar(&tmp, option, arg.Default.(int), remark)
+		data[option]  = &tmp
 	case bool:
 		tmp := false
-		flag.BoolVar(&tmp, arg[0].(string), arg[1].(bool), arg[2].(string))
-		data["married"] = &tmp
+		flag.BoolVar(&tmp, option, arg.Default.(bool), remark)
+		data[option] = &tmp
 	default:
 		return fmt.Errorf("no match case")
 	}
