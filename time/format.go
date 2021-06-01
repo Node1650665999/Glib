@@ -72,7 +72,7 @@ func SetInterval(d time.Duration, fn func(args ...interface{}), args ...interfac
 // SetTimeout 超时执行 fn
 func SetTimeout(d time.Duration, fn func(args ...interface{}), args ...interface{}) {
 	stopChan := make(chan bool)
-	timer    := time.NewTimer(d)
+	timer := time.NewTimer(d)
 	go func() {
 		select {
 		case <-timer.C:
@@ -80,6 +80,6 @@ func SetTimeout(d time.Duration, fn func(args ...interface{}), args ...interface
 		case <-stopChan:
 			break
 		}
-		timer.Stop() // 这里来提高 timer 的回收
+		timer.Stop()
 	}()
 }

@@ -12,11 +12,11 @@ func WriteLog(file string, text string, prefix string) error {
 	if err != nil {
 		return err
 	}
-	logger := GetLogger(logFile, prefix, log.Llongfile|log.Lmicroseconds|log.Ldate)
+	logger := getLogger(logFile, prefix, log.Llongfile|log.Lmicroseconds|log.Ldate)
 	logger.Println(text)
 	return nil
 }
 
-func GetLogger(out io.Writer, prefix string, flag int) *log.Logger {
+func getLogger(out io.Writer, prefix string, flag int) *log.Logger {
 	return log.New(out, prefix, flag)
 }

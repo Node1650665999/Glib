@@ -9,8 +9,6 @@ import (
 	"strings"
 )
 
-
-
 //GetSimple 发送普通get请求
 func GetSimple(apiUrl string, param map[string]string) (string,error) {
 	data := url.Values{}
@@ -35,7 +33,7 @@ func GetSimple(apiUrl string, param map[string]string) (string,error) {
 	return string(b), err
 }
 
-// Get 用来发送复杂 get 请求
+// Get 发送复杂 get 请求
 func Get(apiUrl string, param map[string]string, header map[string]string) (string,error) {
 	// 创建请求
 	req, _ := http.NewRequest("GET", apiUrl, nil)
@@ -133,7 +131,7 @@ func Post(apiUrl string, param map[string]string, header map[string]string) (str
 	return string(body), nil
 }
 
-//PostJson 发送参数类型为 json 的请求
+//PostJson 发送 Content-Type=application/json 的请求
 func PostJson(apiUrl string, param interface{}, header map[string]string) (string,error) {
 	// 转义参数
 	paramJson,_ := json.Marshal(param)
@@ -166,4 +164,20 @@ func PostJson(apiUrl string, param interface{}, header map[string]string) (strin
 	}
 
 	return string(body), nil
+}
+
+//Cors 设置跨域
+func Cors(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")  // 允许访问所有域，可以换成具体url，注意仅具体url才能带cookie信息
+		w.Header().Add("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization, Token") //header的类型
+		w.Header().Add("Access-Control-Allow-Credentials", "true") //设置为true，允许ajax异步请求带cookie信息
+		w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE") //允许请求方法
+		w.Header().Set("content-type", "application/json;charset=UTF-8")             //返回数据格式是json
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		f(w, r)
+	}
 }

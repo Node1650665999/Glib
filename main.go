@@ -1,13 +1,9 @@
 package main
 
-import (
-	"Glib/crypto"
-	"fmt"
-)
+import "fmt"
+import "Glib/io"
+
 func main() {
-	//str := "passwd"
-	url := "www.baidu.com"
-
-	fmt.Println(crypto.UrlEncode(url), crypto.EncodeByBase64(url))
-
+	fmt.Println(io.LocalIP())
 }
+
