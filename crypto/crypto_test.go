@@ -1,14 +1,13 @@
-package main
+package crypto_test
 
 import (
 	"Glib/crypto"
-	"fmt"
+	"testing"
 )
 
-func main () {
+func TestAES(t *testing.T) {
 	name := "tcl"
 	encodeStr := crypto.EncodeByAES(name)
 	decodeStr := crypto.DecodeByAES(encodeStr)
-
-	fmt.Println(encodeStr, decodeStr)
+	t.Log(encodeStr, decodeStr)
 }

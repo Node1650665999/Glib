@@ -1,6 +1,8 @@
 package crypto
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/hmac"
 	"crypto/md5"
 	"crypto/sha1"
@@ -28,6 +30,7 @@ func HashBySha1(str string) string {
 func HashBySha256(str string) string {
 	hash := sha256.New()
 	io.WriteString(hash, str)
+	// 16 进制转字符串
 	//return fmt.Sprintf("%x", hash.Sum(nil))
 	return hex.EncodeToString(hash.Sum(nil))
 }
@@ -50,6 +53,49 @@ func DecodeByBcrypt(password string, hashed string) (match bool, err error) {
 		return false, errors.New("密码比对错误！")
 	}
 	return true, nil
+}
+
+var  commonIV = []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
+var  key      = "L7et45GElm1M4a9g"  //key 的长度必须为：16/24/32 字节
+
+//newAES 创建加密算法 aes
+func newAES(key string) (cipher.Block, error)  {
+	c, err := aes.NewCipher([]byte(key))
+	if err != nil {
+		return nil,err
+	}
+	return c,nil
+}
+
+//EncodeByAES 使用对称加密算法加密字符串 src
+func EncodeByAES(src string) string {
+	// 实例化算法aes
+	c, _ := newAES(key)
+
+	text := []byte(src)
+
+	//加密字符串
+	cfb := cipher.NewCFBEncrypter(c, commonIV)
+	ciphertext := make([]byte, len(text))
+	cfb.XORKeyStream(ciphertext, text)
+
+	//十六进制转字符串
+	return hex.EncodeToString(ciphertext)
+}
+
+//DecodeByAES 使用对称加密算法解密字符串 hash
+func DecodeByAES(hash string) string  {
+	// 实例化算法aes
+	c, _ := newAES(key)
+
+	//字符串转十六进制
+	text,_ := hex.DecodeString(hash)
+
+	// 解密字符串
+	cfbdec := cipher.NewCFBDecrypter(c, commonIV)
+	plaintextCopy := make([]byte, len(text))
+	cfbdec.XORKeyStream(plaintextCopy, text)
+	return string(plaintextCopy)
 }
 
 //EncodeByBase64 实现base64编码
@@ -76,3 +122,4 @@ func UrlDecode(url string) (string,error) {
 	}
 	return "", err
 }
+

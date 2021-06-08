@@ -166,6 +166,18 @@ func PostJson(apiUrl string, param interface{}, header map[string]string) (strin
 	return string(body), nil
 }
 
+//GetParam 获取 Http Get请求参数
+func GetParam(key string,req *http.Request) string {
+	req.ParseForm()
+	return req.FormValue(key)
+}
+
+//PostParam 获取 Http Post请求参数
+func PostParam(key string,req *http.Request) string {
+	req.ParseForm()
+	return req.Form.Get(key)
+}
+
 //Cors 设置跨域
 func Cors(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
