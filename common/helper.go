@@ -2,6 +2,7 @@ package common
 
 import (
 	"bytes"
+	"crypto/rand"
 	"fmt"
 	"strings"
 	"sync"
@@ -89,7 +90,8 @@ type Worker struct {
 	number    int64
 }
 
-func UUId() int64 {
+//NumberUuid 生成数字类型的uuid
+func NumberUuid() int64 {
 	w := &Worker{
 		timestamp: 0,
 		workerId:  1,
@@ -113,4 +115,11 @@ func UUId() int64 {
 
 	ID := int64((now-startTime)<<timeShift | (w.workerId << workerShift) | (w.number))
 	return ID
+}
+
+//StrUuid 生成字符串格式的UUID
+func StrUuid(n int) string {
+	randBytes := make([]byte, n/2)
+	rand.Read(randBytes)
+	return fmt.Sprintf("%x", randBytes)
 }

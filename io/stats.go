@@ -8,7 +8,6 @@ import (
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 	gnet "github.com/shirou/gopsutil/net"
-	"net"
 	"time"
 )
 
@@ -87,25 +86,4 @@ func NetworkCardInfo() []string  {
 	return infos
 }
 
-//LocalIP 返回本机IP地址
-func LocalIP() (ip string, err error) {
-	addrs, err := net.InterfaceAddrs()
-	if err != nil {
-		return
-	}
-	for _, addr := range addrs {
-		ipAddr, ok := addr.(*net.IPNet)
-		if !ok {
-			continue
-		}
-		if ipAddr.IP.IsLoopback() {
-			continue
-		}
-		if !ipAddr.IP.IsGlobalUnicast() {
-			continue
-		}
-		return ipAddr.IP.String(), nil
-	}
-	return
-}
 

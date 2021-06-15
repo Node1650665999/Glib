@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -192,4 +193,54 @@ func Cors(f http.HandlerFunc) http.HandlerFunc {
 		}
 		f(w, r)
 	}
+}
+
+//Response 定义了返回给客户端的数据结构
+type Response struct {
+	Code int         `json:"code"`
+	Msg  string      `json:"msg"`
+	Data interface{} `json:"data"`
+}
+
+//ApiResponse 返回Json类型的响应结果给客户端
+func ApiResponse(code int, msg string, data interface{},w http.ResponseWriter)  {
+	w.Header().Add("Content-Type", "application/json")
+	resp := Response{
+		Code:code,
+		Msg: msg,
+		Data: data,
+	}
+	res,_ := json.Marshal(resp)
+	w.Write(res)
+}
+
+//LocalIp 返回本机IP地址
+func LocalIp() (ip string, err error) {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return
+	}
+	for _, addr := range addrs {
+		ipAddr, ok := addr.(*net.IPNet)
+		if !ok {
+			continue
+		}
+		if ipAddr.IP.IsLoopback() {
+			continue
+		}
+		if !ipAddr.IP.IsGlobalUnicast() {
+			continue
+		}
+		return ipAddr.IP.String(), nil
+	}
+	return
+}
+
+//RemoteIp 获取远程客户端的IP
+func RemoteIp(r *http.Request) string {
+	forwarded := r.Header.Get("X-FORWARDED-FOR")
+	if forwarded != "" {
+		return forwarded
+	}
+	return r.RemoteAddr
 }

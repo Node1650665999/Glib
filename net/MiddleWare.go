@@ -1,7 +1,6 @@
 package net
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -37,7 +36,6 @@ func (f *MiddleWare) Handle(next HttpHandle, mw []string) HttpHandle {
 	return func(w http.ResponseWriter, r *http.Request) {
 		for _, m := range mw {
 			handle,ok := f.filterMap[m]
-			fmt.Printf("%v,%T",m, f.filterMap[m])
 			if ! ok {
 				continue
 			}
