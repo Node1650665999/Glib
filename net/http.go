@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"strings"
 )
@@ -243,4 +244,11 @@ func RemoteIp(r *http.Request) string {
 		return forwarded
 	}
 	return r.RemoteAddr
+}
+
+//ProxyForward 实现了一个代理转发
+func ProxyForward(w http.ResponseWriter, r *http.Request, dstUrl string)  {
+	u, _ := url.Parse(dstUrl)
+	proxy := httputil.NewSingleHostReverseProxy(u)
+	proxy.ServeHTTP(w, r)
 }

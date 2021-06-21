@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"crypto/rand"
 	"fmt"
+	"os"
+	"os/exec"
 	"strings"
 	"sync"
 	"time"
@@ -64,6 +66,12 @@ func Ext(file string) (basename string, ext string) {
 	return arr[0], arr[len(arr)-1]
 }
 
+//FileExist 判断文件是否存在
+func FileExist(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil || os.IsExist(err)
+}
+
 //StrJoin 用来拼接字符串
 func StrJoin(args ...string) string {
 	var buf bytes.Buffer
@@ -122,4 +130,15 @@ func StrUuid(n int) string {
 	randBytes := make([]byte, n/2)
 	rand.Read(randBytes)
 	return fmt.Sprintf("%x", randBytes)
+}
+
+//ExecCommand 运行系统命令和二进制文件
+func ExecCommand(cmd string, params ...string) (string, error) {
+	// Print Go Version
+	cmdOutput, err := exec.Command(cmd, params...).Output()
+	if err != nil {
+		return "", err
+	}
+
+	return string(cmdOutput), err
 }
