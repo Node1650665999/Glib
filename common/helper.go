@@ -1,12 +1,13 @@
 package common
 
 import (
+	"Glib/log"
 	"bytes"
 	"crypto/rand"
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
+	"path"
 	"sync"
 	"time"
 )
@@ -60,10 +61,32 @@ func ByteFormat(size uint64) string {
 }
 
 
-// Ext 获取文件扩展名
-func Ext(file string) (basename string, ext string) {
-	arr := strings.Split(file, ".")
-	return arr[0], arr[len(arr)-1]
+//MkDir 创建一个目录
+func MkDir(path string) error {
+	_, err := os.Stat(path)
+
+	// 权限问题
+	if os.IsPermission(err) {
+		return fmt.Errorf(" Permission denied src: %s", err)
+	}
+
+	// 已存在
+	if os.IsExist(err) {
+		return nil
+	}
+
+	// 创建目录
+	return os.MkdirAll(path, os.ModePerm)
+}
+
+// Ext get the file ext
+func Ext(fileName string) string {
+	return path.Ext(fileName)
+}
+
+// BaseName 获取文件的 basename
+func BaseName(filename string) string  {
+	return path.Base(filename)
 }
 
 //FileExist 判断文件是否存在
@@ -139,6 +162,10 @@ func ExecCommand(cmd string, params ...string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	return string(cmdOutput), err
+}
+
+func Show() int {
+	log.WriteLog("asff")
+	return 123
 }

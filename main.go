@@ -5,9 +5,15 @@ import (
 	"fmt"
 )
 
-func main()  {
-	file := "text.img"
-	ext,_ := common.Ext(file)
-	fmt.Println(ext)
+type User struct {
+	Name string
+	Age int
 }
+func main() {
+	fmt.Println(common.Show())
+}
+
+
+
+
 

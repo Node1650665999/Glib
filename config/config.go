@@ -20,7 +20,7 @@ func ParseConfig2(filename string) (*config.Config, error) {
 	}
 
 	config.WithOptions(config.ParseEnv)
-	_, ext := common.Ext(filename)
+	ext := common.Ext(filename)
 	dr,isset := drivers[ext]
 	if ! isset  {
 		return nil, fmt.Errorf("file type is invalid, only support [json,yaml,yml,ini]")

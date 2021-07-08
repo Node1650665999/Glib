@@ -4,6 +4,8 @@ import (
 	"Glib/common"
 	mytime "Glib/time"
 	"bufio"
+	"bytes"
+	"encoding/csv"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"io"
@@ -104,6 +106,8 @@ func NewFileUpload(fromFile string, savePath string) *FileUpload {
 // UploadHandler 处理文件上传
 func (upload *FileUpload) UploadHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) (dstfile string, err error) {
 	r.Body = http.MaxBytesReader(w, r.Body, upload.maxSize)
+
+	//文件大小限制
 	if err := r.ParseMultipartForm(upload.maxSize); err != nil {
 		return "", err
 	}
@@ -125,7 +129,7 @@ func (upload *FileUpload) UploadHandler(w http.ResponseWriter, r *http.Request, 
 	if err != nil {
 		return "", err
 	}
-	_, ext := common.Ext(headers.Filename)
+	ext := common.Ext(headers.Filename)
 
 	//写入文件
 	dstFile := ""
@@ -141,4 +145,77 @@ func (upload *FileUpload) UploadHandler(w http.ResponseWriter, r *http.Request, 
 	}
 	return dstfile, err
 }
+
+//RemoteDownload 实现下载文件到本地,获得网络文件的输入流以及本地文件的输出流 ,然后将输入流读取到输出流中
+func RemoteDownload(remote string,local string) error  {
+	res, err := http.Get(remote)
+	if err != nil {
+		return fmt.Errorf("A error occurred: %v", err)
+	}
+	defer res.Body.Close()
+	// 获得get请求响应的reader对象
+	reader := bufio.NewReaderSize(res.Body, 32 * 1024)
+
+	// 获得文件的writer对象
+	file, err := os.Create(local)
+	defer file.Close()
+	if err != nil {
+		return err
+	}
+	writer := bufio.NewWriter(file)
+	_, err = io.Copy(writer, reader)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func ImportExcel() {
+
+}
+
+func ExportExcel()  {
+}
+
+func ImportCsv()  {
+
+}
+
+//ExportCsv 导出 csv 文件
+func ExportCsv(filename string, data [][]string, w http.ResponseWriter) error {
+	buf := &bytes.Buffer{}
+	buf.WriteString("\xEF\xBB\xBF") // 写入UTF-8 BOM,避免文件打开乱码
+
+	writer := csv.NewWriter(buf)
+	writer.WriteAll(data)
+
+	// 设置下载的文件名
+	w.Header().Add("Content-Type", "application/octet-stream")
+	//w.Header().Add("Content-Type", "text/csv")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=%s", filename))
+	//输出数据
+	w.Write(buf.Bytes())
+	return nil
+}
+
+//SaveCsv 保存生成的csv文件到本地
+func SaveCsv(filename string, data [][]string) error {
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	f.WriteString("\xEF\xBB\xBF")
+	w := csv.NewWriter(f)
+	/*data := [][]string{
+		{"1", "test1", "test1-1"},
+		{"2", "test2", "test2-1"},
+		{"3", "test3", "test3-1"},
+	}*/
+
+	return w.WriteAll(data)
+}
+
 
