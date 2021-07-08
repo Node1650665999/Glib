@@ -3,6 +3,7 @@ package net
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/node1650665999/Glib/log"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -251,4 +252,9 @@ func ProxyForward(w http.ResponseWriter, r *http.Request, dstUrl string)  {
 	u, _ := url.Parse(dstUrl)
 	proxy := httputil.NewSingleHostReverseProxy(u)
 	proxy.ServeHTTP(w, r)
+}
+
+func Show() int {
+	log.WriteLog("asff")
+	return 123
 }

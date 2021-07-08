@@ -1,7 +1,6 @@
 package common
 
 import (
-	"github.com/node1650665999/Glib/log"
 	"bytes"
 	"crypto/rand"
 	"fmt"
@@ -165,7 +164,3 @@ func ExecCommand(cmd string, params ...string) (string, error) {
 	return string(cmdOutput), err
 }
 
-func Show() int {
-	log.WriteLog("asff")
-	return 123
-}

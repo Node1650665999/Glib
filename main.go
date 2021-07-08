@@ -1,16 +1,12 @@
 package main
 
 import (
-	"github.com/node1650665999/Glib/common"
 	"fmt"
+	"github.com/node1650665999/Glib/net"
 )
 
-type User struct {
-	Name string
-	Age int
-}
 func main() {
-	fmt.Println(common.Show())
+	fmt.Println(net.Show())
 }
 
 
