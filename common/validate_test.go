@@ -1,7 +1,7 @@
 package common_test
 
 import (
-	. "Glib/common"
+	. "github.com/Node1650665999/Glib/common"
 	validation "github.com/go-ozzo/ozzo-validation/v3"
 	"regexp"
 	"testing"

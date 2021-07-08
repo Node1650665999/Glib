@@ -1,7 +1,7 @@
 package io
 
 import (
-	"Glib/common"
+	"github.com/Node1650665999/Glib/common"
 	"fmt"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"

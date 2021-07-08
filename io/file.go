@@ -1,8 +1,8 @@
 package io
 
 import (
-	"Glib/common"
-	mytime "Glib/time"
+	"github.com/Node1650665999/Glib/common"
+	mytime "github.com/Node1650665999/Glib/time"
 	"bufio"
 	"bytes"
 	"encoding/csv"

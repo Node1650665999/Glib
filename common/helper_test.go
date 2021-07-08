@@ -1,7 +1,7 @@
 package common_test
 
 import "testing"
-import "Glib/common"
+import "github.com/Node1650665999/Glib/common"
 
 func TestExecCommand(t *testing.T) {
 	res, err := common.ExecCommand("ps", "-aux")

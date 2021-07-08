@@ -1,7 +1,7 @@
 package common
 
 import (
-	"Glib/log"
+	"github.com/Node1650665999/Glib/log"
 	"bytes"
 	"crypto/rand"
 	"fmt"

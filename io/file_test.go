@@ -1,7 +1,7 @@
 package io_test
 
 import (
-	"Glib/io"
+	"github.com/Node1650665999/Glib/io"
 	"testing"
 )
 

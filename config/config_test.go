@@ -1,7 +1,7 @@
 package config_test
 
 import (
-	"Glib/config"
+	"github.com/Node1650665999/Glib/config"
 	"testing"
 )
 

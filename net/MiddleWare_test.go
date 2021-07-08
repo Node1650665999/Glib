@@ -1,7 +1,7 @@
 package net_test
 
 import (
-	. "Glib/net"
+	. "github.com/Node1650665999/Glib/net"
 	"errors"
 	"net/http"
 	"testing"
