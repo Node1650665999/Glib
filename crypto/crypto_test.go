@@ -1,7 +1,7 @@
 package crypto_test
 
 import (
-	"github.com/Node1650665999/Glib/crypto"
+	"github.com/node1650665999/Glib/crypto"
 	"testing"
 )
 

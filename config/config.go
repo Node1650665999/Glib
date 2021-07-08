@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/Node1650665999/Glib/common"
+	"github.com/node1650665999/Glib/common"
 	"fmt"
 	"github.com/gookit/config"
 	"github.com/gookit/config/ini"

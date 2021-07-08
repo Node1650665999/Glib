@@ -1,7 +1,7 @@
 package common
 
 import (
-	mycrypto "github.com/Node1650665999/Glib/crypto"
+	mycrypto "github.com/node1650665999/Glib/crypto"
 	"encoding/json"
 	"fmt"
 	"strings"

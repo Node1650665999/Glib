@@ -1,7 +1,7 @@
 package log_test
 
 import "testing"
-import "github.com/Node1650665999/Glib/log"
+import "github.com/node1650665999/Glib/log"
 
 func TestWriteLog(t *testing.T) {
 	data := "asd"

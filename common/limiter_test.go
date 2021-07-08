@@ -1,7 +1,7 @@
 package common_test
 
 import (
-	"github.com/Node1650665999/Glib/common"
+	"github.com/node1650665999/Glib/common"
 	"fmt"
 	"testing"
 )
