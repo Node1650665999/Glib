@@ -1,4 +1,4 @@
-module github.com/Node1650665999/Glib
+module github.com/node1650665999/Glib
 
 go 1.15
 
