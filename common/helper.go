@@ -3,10 +3,13 @@ package common
 import (
 	"bytes"
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -164,3 +167,22 @@ func ExecCommand(cmd string, params ...string) (string, error) {
 	return string(cmdOutput), err
 }
 
+//JsonEncode 实现Json编码
+func JsonEncode(v interface{}) string {
+	u,_ := json.Marshal(v)
+	return string(u)
+}
+
+//JsonDecode 实现json解码
+func JsonDecode(data string, v interface{}) error  {
+	return json.Unmarshal([]byte(data), v)
+}
+
+//GetBuildAbsPath 获取编译后可执行文件的根目录
+//注意： 如果以 go run 运行，则无法获取正确的根目录,因为 go run 生成的可执行文件位于/tmp目录下
+func GetBuildAbsPath() string {
+	file, _ := exec.LookPath(os.Args[0])
+	path, _ := filepath.Abs(file)
+	index := strings.LastIndex(path, string(os.PathSeparator))
+	return path[:index]
+}

@@ -13,7 +13,7 @@ import (
 )
 
 // WriteLog 将日志内容 text 写入到 file 中
-func WriteLog(text interface{})  error {
+func WriteLog(text interface{}) error {
 	pc, file, line, _ := runtime.Caller(1)
 
 	//文件名
