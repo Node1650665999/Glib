@@ -1,11 +1,12 @@
 package log
 
 import (
-	"github.com/node1650665999/Glib/common"
 	"fmt"
+	"github.com/node1650665999/Glib/common"
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 	"time"
@@ -15,17 +16,29 @@ import (
 func WriteLog(text interface{})  error {
 	pc, file, line, _ := runtime.Caller(1)
 
-	//项目根目录
-	wd, _  := os.Getwd()
-
 	//文件名
 	funcname := filepath.Ext(runtime.FuncForPC(pc).Name())
 	funcname = strings.TrimPrefix(funcname, ".")
 	filename := fmt.Sprintf("%s-%s.log", funcname, time.Now().Format("2006-01-02"))
 
 	//日志路径
-	dirSplit := strings.Split(file, wd)
-	subpath  := strings.Replace(dirSplit[len(dirSplit)-1], ".go", "", -1)
+	wd, _   := os.Getwd()
+	subpath := ""
+
+	r, _ := regexp.Compile("@v.+")
+	if r.MatchString(file) {
+		//应用外调用
+		match := r.FindString(file)
+		index   := strings.Index(match, string(os.PathSeparator))
+		subpath = match[index:]
+	} else {
+		//应用内调用
+		/*dirSplit := strings.SplitAfter(file, wd)
+		subpath  = dirSplit[len(dirSplit)-1]*/
+		subpath  = strings.Replace(file, wd, "", -1)
+	}
+
+	//创建日志目录
 	logpath  := fmt.Sprintf("%s/runtime/logs/%s", wd, strings.Trim(subpath, "/"))
 	if err   := common.MkDir(logpath); err != nil {
 		return err
@@ -61,3 +74,4 @@ func WriteLog(text interface{})  error {
 func getLogger(out io.Writer, prefix string, flag int) *log.Logger {
 	return log.New(out, prefix, flag)
 }*/
+
