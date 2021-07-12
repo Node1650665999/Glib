@@ -3,6 +3,7 @@ module github.com/node1650665999/Glib
 go 1.15
 
 require (
+	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/cosmtrek/air v1.27.3 // indirect
@@ -34,4 +35,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 
 )
-
