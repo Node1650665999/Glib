@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
+	pb "github.com/node1650665999/Glib/grpc/proto"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"io/ioutil"
 	"log"
 	"net"
-
-	"google.golang.org/grpc"
-
-	pb "github.com/node1650665999/Glib/grpc/proto"
 )
 
 //SearchService 定义服务，需实现了SearchServiceServer，这样该服务才能注册
@@ -20,15 +22,35 @@ func (s *SearchService) Search(ctx context.Context, r *pb.SearchRequest) (*pb.Se
 const PORT = "9001"
 
 func main() {
-	//创建 gRPC Server,用来注册服务
-	server := grpc.NewServer()
-	//注册服务
+	cert, err := tls.LoadX509KeyPair("../../cert/server.pem", "../../cert/server.key")
+	if err != nil {
+		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+	}
+
+	certPool := x509.NewCertPool()
+	ca, err  := ioutil.ReadFile("../../cert/ca.pem")
+	if err != nil {
+		log.Fatalf("ioutil.ReadFile err: %v", err)
+	}
+
+	if ok := certPool.AppendCertsFromPEM(ca); !ok {
+		log.Fatalf("certPool.AppendCertsFromPEM err")
+	}
+
+	//
+	c := credentials.NewTLS(&tls.Config{
+		Certificates: []tls.Certificate{cert},
+		ClientAuth:   tls.RequireAndVerifyClientCert,
+		ClientCAs:    certPool,
+	})
+
+	server := grpc.NewServer(grpc.Creds(c))
 	pb.RegisterSearchServiceServer(server, &SearchService{})
-	//监听tcp请求
+
 	lis, err := net.Listen("tcp", ":"+PORT)
 	if err != nil {
 		log.Fatalf("net.Listen err: %v", err)
 	}
-	//处理
+
 	server.Serve(lis)
 }
