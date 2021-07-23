@@ -12,8 +12,9 @@ import (
 	"google.golang.org/grpc/status"
 	"io/ioutil"
 	"log"
-	"net"
+	"net/http"
 	"runtime/debug"
+	"strings"
 )
 
 //SearchService 定义服务，需实现了SearchServiceServer，这样该服务才能注册
@@ -27,7 +28,6 @@ func (s *SearchService) Search(ctx context.Context, r *pb.SearchRequest) (*pb.Se
 const PORT = "9001"
 
 func main() {
-
 	c    := GetTLSCredentials()
 	opts := []grpc.ServerOption{
 		//证书
@@ -39,15 +39,28 @@ func main() {
 		),
 	}
 
+	//实例化rpc服务器
 	server := grpc.NewServer(opts...)
 	pb.RegisterSearchServiceServer(server, &SearchService{})
 
-	lis, err := net.Listen("tcp", ":"+PORT)
-	if err != nil {
-		log.Fatalf("net.Listen err: %v", err)
-	}
+	//实例化http服务器
+	mux := GetHTTPServeMux()
+	certFile := "../../cert/server.pem"
+	keyFile := "../../cert/server.key"
 
-	server.Serve(lis)
+	http.ListenAndServeTLS(":"+PORT,
+		certFile,
+		keyFile,
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			//基于协议判断分发给哪个服务器
+			if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
+				server.ServeHTTP(w, r)
+			} else {
+				mux.ServeHTTP(w, r)
+			}
+			return
+		}),
+	)
 }
 
 func GetTLSCredentials() credentials.TransportCredentials {
@@ -73,6 +86,16 @@ func GetTLSCredentials() credentials.TransportCredentials {
 	})
 
 	return c
+}
+
+//GetHTTPServeMux 实例化http服务器
+func GetHTTPServeMux() *http.ServeMux {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("http Server"))
+	})
+
+	return mux
 }
 
 func LoggingInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {

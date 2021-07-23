@@ -14,6 +14,7 @@ require (
 	github.com/go-playground/validator/v10 v10.6.1 // indirect
 	github.com/gookit/config v1.1.0
 	github.com/gookit/ini v1.1.1 // indirect
+	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
 	github.com/hpcloud/tail v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/julienschmidt/httprouter v1.3.0
