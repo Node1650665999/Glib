@@ -1,9 +1,9 @@
 package common
 
 import (
-	mycrypto "github.com/node1650665999/Glib/crypto"
 	"encoding/json"
 	"fmt"
+	mycrypto "github.com/node1650665999/Glib/crypto"
 	"strings"
 	"time"
 )
@@ -119,6 +119,6 @@ func makeSign(h *Header, p *PayLoad) (hp string, sign string) {
 
 	headerAndPayLoad := mycrypto.EncodeByBase64(string(header)) + "." +  mycrypto.EncodeByBase64(string(payLoad))
 
-	return headerAndPayLoad, mycrypto.HashByHmac(headerAndPayLoad, hmacKey)
+	return headerAndPayLoad, mycrypto.HmacMd5(headerAndPayLoad, hmacKey)
 }
 

@@ -5,10 +5,14 @@ import (
 	"crypto/cipher"
 	"crypto/hmac"
 	"crypto/md5"
+	"crypto/rand"
+	"crypto/rsa"
 	"crypto/sha1"
 	"crypto/sha256"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
@@ -35,12 +39,27 @@ func HashBySha256(str string) string {
 	return hex.EncodeToString(hash.Sum(nil))
 }
 
-//HashByHmac 利用哈希算法，以一个密钥和一个消息为输入，生成一个消息摘要作为输出
-func HashByHmac(str string, key string) string  {
+//HmacMd5 使用md5哈希加密算法生成加密串
+func HmacMd5(data string, key string) string  {
 	hash := hmac.New(md5.New, []byte(key))
-	hash.Write([]byte(str))
+	hash.Write([]byte(data))
 	return hex.EncodeToString(hash.Sum([]byte("")))
 }
+
+//HmacSha256 使用sha256哈希加密算法生成加密串
+func HmacSha256(data, key string) string {
+	hash:= hmac.New(sha256.New, []byte(key))
+	hash.Write([]byte(data))
+	return hex.EncodeToString(hash.Sum([]byte("")))
+}
+
+//HmacSha1 使用sha1哈希加密算法生成加密串
+func HmacSha1(data, key string) string {
+	hash:= hmac.New(sha1.New, []byte(key))
+	hash.Write([]byte(data))
+	return hex.EncodeToString(hash.Sum([]byte("")))
+}
+
 
 //EncodeByBcrypt 密码加密
 func EncodeByBcrypt(password string) ([]byte, error) {
@@ -97,6 +116,41 @@ func DecodeByAES(hash string) string  {
 	cfbdec.XORKeyStream(plaintextCopy, text)
 	return string(plaintextCopy)
 }
+
+//EncodeByRsa 实现RSA加密
+func EncodeByRsa(origData []byte, publicKey []byte) ([]byte, error) {
+	//解密pem格式的公钥
+	block, _ := pem.Decode(publicKey)
+	if block == nil {
+		return nil, errors.New("public key error")
+	}
+	// 解析公钥
+	pubInterface, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+	// 类型断言
+	pub := pubInterface.(*rsa.PublicKey)
+	//加密
+	return rsa.EncryptPKCS1v15(rand.Reader, pub, origData)
+}
+
+//DecodeByRsa 实现RSA解密
+func DecodeByRsa(ciphertext []byte, privateKey []byte) ([]byte, error) {
+	//解密
+	block, _ := pem.Decode(privateKey)
+	if block == nil {
+		return nil, errors.New("private key error!")
+	}
+	//解析PKCS1格式的私钥
+	priv, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+	// 解密
+	return rsa.DecryptPKCS1v15(rand.Reader, priv, ciphertext)
+}
+
 
 //EncodeByBase64 实现base64编码
 func EncodeByBase64(str string) string {
