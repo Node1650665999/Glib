@@ -4,6 +4,8 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
+	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	pb "github.com/node1650665999/Glib/grpc/proto"
 	"google.golang.org/grpc"
@@ -75,6 +77,17 @@ func GetTLSCredentials() credentials.TransportCredentials {
 	return c
 }
 
+
+type ErrorData struct {
+	Code int
+	Msg  string
+}
+
+func ErrorDataString(code int, msg string) string  {
+	str,_ := json.Marshal(ErrorData{code, msg})
+	return string(str)
+}
+
 func LoggingInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	//模拟超时
 	//time.Sleep(10 * time.Second)
@@ -87,6 +100,14 @@ func LoggingInterceptor(ctx context.Context, req interface{}, info *grpc.UnarySe
 	//模拟异常,将触发RecoveryInterceptor中间件
 	//panic("some thing error")
 
+	//附带自定义业务错误
+	/*if req!= "gRPC" {
+		selfError := ErrorDataString(3000, "自定义业务参数")
+		sts,_ := status.New(codes.Internal, "Rpc self define err").WithDetails(proto.MessageV1(selfError))
+		return nil, sts.Err()
+	}*/
+
+
 	//前置操作
 	log.Printf("gRPC method: %s, %v", info.FullMethod, req)
 	resp, err := handler(ctx, req)
@@ -95,12 +116,15 @@ func LoggingInterceptor(ctx context.Context, req interface{}, info *grpc.UnarySe
 	return resp, err
 }
 
+
+
 func RecoveryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 	//异常捕获
 	defer func() {
 		if e := recover(); e != nil {
 			debug.PrintStack()
 			err = status.Errorf(codes.Internal, "Panic err: %v", e)
+			status.New(codes.Internal, "Panic err").WithDetails(proto.MessageV1("asdsaf"))
 		}
 	}()
 

@@ -4,17 +4,22 @@ go 1.15
 
 require (
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
-	github.com/bitly/go-simplejson v0.5.0
+	github.com/StackExchange/wmi v1.2.0 // indirect
+	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/cosmtrek/air v1.27.3 // indirect
 	github.com/creack/pty v1.1.13 // indirect
 	github.com/fatih/color v1.12.0 // indirect
-	github.com/gin-gonic/gin v1.7.2
+	github.com/fullstorydev/grpcurl v1.8.2 // indirect
+	github.com/gin-gonic/gin v1.7.2 // indirect
+	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-ozzo/ozzo-validation/v3 v3.8.1
 	github.com/go-playground/validator/v10 v10.6.1 // indirect
+	github.com/golang/protobuf v1.5.2
 	github.com/gookit/config v1.1.0
 	github.com/gookit/ini v1.1.1 // indirect
-	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
+	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
+	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/hpcloud/tail v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/julienschmidt/httprouter v1.3.0
@@ -37,6 +42,6 @@ require (
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
-	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 
 )
