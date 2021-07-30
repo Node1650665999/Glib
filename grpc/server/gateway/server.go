@@ -65,6 +65,7 @@ func grpcGateway() *runtime.ServeMux {
 	//endpoint := "0.0.0.0:" + port
 	gwmux := runtime.NewServeMux()
 	dopts := []grpc.DialOption{grpc.WithInsecure()}
+	//将 http 转成 rpc 请求
 	_ = pb.RegisterSearchServiceHandlerFromEndpoint(context.Background(), gwmux, ENDPOINT, dopts)
 	return gwmux
 }
