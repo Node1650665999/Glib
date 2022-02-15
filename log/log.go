@@ -5,6 +5,7 @@ import (
 	"github.com/node1650665999/Glib/common"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"runtime"
@@ -19,7 +20,6 @@ func WriteLog(text interface{}) error {
 	//文件名
 	funcname := filepath.Ext(runtime.FuncForPC(pc).Name())
 	funcname = strings.TrimPrefix(funcname, ".")
-	filename := fmt.Sprintf("%s-%s.log", funcname, time.Now().Format("2006-01-02"))
 
 	//日志路径
 	wd, _   := os.Getwd()
@@ -38,6 +38,9 @@ func WriteLog(text interface{}) error {
 		subpath  = strings.Replace(file, wd, "", -1)
 	}
 
+	prefix   := strings.Replace(path.Base(subpath),path.Ext(subpath),"", -1)
+	filename := fmt.Sprintf("%s-%s.log", prefix, time.Now().Format("2006-01-02"))
+
 	//创建日志目录
 	logpath  := fmt.Sprintf("%s/runtime/logs/%s", wd, strings.Trim(subpath, "/"))
 	if err   := common.MkDir(logpath); err != nil {
@@ -46,6 +49,18 @@ func WriteLog(text interface{}) error {
 
 	//完整的日志文件路径
 	save := fmt.Sprintf("%s/%s", logpath, filename)
+
+	//超过容量限制则重命名
+	fileInfo,err := os.Stat(save)
+	logSize  := int64(64) * 1024 * 1024
+	if err == nil && fileInfo.Size() > logSize {
+		renameSave := fmt.Sprintf("%s-%d", save, time.Now().Nanosecond())
+		err := os.Rename(save, renameSave)
+		if err != nil {
+			return err
+		}
+	}
+
 	fh, err := os.OpenFile(save, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
 	defer fh.Close()
 	if err != nil {
@@ -53,8 +68,8 @@ func WriteLog(text interface{}) error {
 	}
 
 	//写入日志
-	prefix := fmt.Sprintf("[info:%d]", line)
-	logger :=  log.New(fh, prefix,  log.Lmicroseconds|log.Ldate)
+	pfx := fmt.Sprintf("[info:%s:%d]",funcname,line)
+	logger :=  log.New(fh, pfx,  log.Lmicroseconds|log.Ldate)
 	logger.Println(text)
 
 	return nil
